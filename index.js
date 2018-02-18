@@ -25,15 +25,21 @@ function build_response(url) {
 }
 
 // Create proxy and target servers and set the target in the options.
-// TODO: this forward proxy is unnecessary. Use an Express service instead.
+// TODO: this forward proxy is unnecessary. Use a raw Node http service instead.
 httpProxy.createProxyServer({target:'http://localhost:9000'}).listen(8000);
 http.createServer(function (req, res) {
     // Ignore favicon requests.
+    // TODO: Tighten permissions to requests from the web-app front-end only.
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.writeHead(200, { 'Content-Type': 'text/json' });
+
     if (req.url.includes('favicon')) {
         res.end();
     } else {
         build_response(req.url).then((result) => {
-            res.writeHead(200, { 'Content-Type': 'text/json' });
+            // Set CORS headers to allow front-end requests.
             res.write(JSON.stringify(result));
             res.end();
         });
