@@ -1,5 +1,4 @@
 const http = require('http');
-const httpProxy = require('http-proxy');
 const maps = require('@google/maps');
 const GOOGLE_MAPS_API_KEY = require('./auth').GOOGLE_MAPS_API_KEY;
 
@@ -25,8 +24,6 @@ function build_response(url) {
 }
 
 // Create proxy and target servers and set the target in the options.
-// TODO: this forward proxy is unnecessary. Use a raw Node http service instead.
-httpProxy.createProxyServer({target:'http://localhost:9000'}).listen(8000);
 http.createServer(function (req, res) {
     // Ignore favicon requests.
     // TODO: Tighten permissions to requests from the web-app front-end only.

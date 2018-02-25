@@ -37,3 +37,25 @@ http://localhost:9000/starting_x=-73.954527&starting_y=40.587243&ending_x=-73.97
 ```
 
 The output should be the same as you would get calling the [Google Maps Directions API](https://developers.google.com/maps/documentation/directions/) key. You will also need to have [Node.JS](https://nodejs.org/en/) directly.
+
+## Using the container
+
+This repo contains a Docker file bundled with Node.JS and this application.
+
+To build the container image, run the following from the root folder:
+
+    docker build -t residentmario/subway-explorer-gmaps-proxy .
+
+Then, to run the container (pointing it to `localhost:49161`):
+
+    docker run -p 49161:9000 -d residentmario/subway-explorer-api
+
+You can visit the following (port-forwarded) URI in the browser to verify that the connection is being served:
+
+```
+http://localhost:49161/starting_x=-73.954527&starting_y=40.587243&ending_x=-73.977756&ending_y=40.687163
+```
+
+You can also jump inside the container by running `docker exec -it 949cc5d81abe /bin/bash` (replacing the name with the 
+name of the running image, discoverable via `docker ps`) and inspect the running processes to verify things are running 
+as expected.
