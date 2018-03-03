@@ -1,10 +1,12 @@
 const http = require('http');
 const maps = require('@google/maps');
-const GOOGLE_MAPS_API_KEY = require('./auth').GOOGLE_MAPS_API_KEY;
+
+require('dotenv').config();
+const GOOGLE_MAPS_DIRECTIONS_API_KEY = process.env.GOOGLE_MAPS_DIRECTIONS_API_KEY;
 
 // Maps Directions API helper function.
 function fetch_transit_directions(starting_x, starting_y, ending_x, ending_y) {
-    let client = maps.createClient({key: GOOGLE_MAPS_API_KEY, Promise: Promise});
+    let client = maps.createClient({key: GOOGLE_MAPS_DIRECTIONS_API_KEY, Promise: Promise});
     return client.directions(
         {'origin': [starting_y, starting_x], 'destination': [ending_y, ending_x],
             'mode': 'transit', 'transit_mode': 'subway'},
