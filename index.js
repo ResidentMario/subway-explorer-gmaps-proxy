@@ -1,5 +1,6 @@
 const http = require('http');
 const maps = require('@google/maps');
+const url  = require('url');
 
 require('dotenv').config();
 const GOOGLE_MAPS_DIRECTIONS_API_KEY = process.env.GOOGLE_MAPS_DIRECTIONS_API_KEY;
@@ -27,18 +28,29 @@ function build_response(url) {
 
 // Create proxy and target servers and set the target in the options.
 http.createServer(function (req, res) {
-    // Ignore favicon requests.
     // TODO: Tighten permissions to requests from the web-app front-end only.
+    // Set CORS headers to allow front-end requests.
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Request-Method', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
-    res.writeHead(200, { 'Content-Type': 'text/json' });
+    res.writeHead(200, {'Content-Type': 'text/json'});
 
+    // Ignore favicon requests.
     if (req.url.includes('favicon')) {
         res.end();
+    // Populate a status page.
+    } else if (url.parse(req.url).href === '/status') {
+        res.write(JSON.stringify({status: 'OK'}));
+        res.end();
+    // Handle bad requests.
+    } else if (!((req.url.includes('starting_x')) && (req.url.includes('starting_y')) &&
+            (req.url.includes('ending_x')) && (req.url.includes('ending_y')))) {
+        res.write(JSON.stringify({status: "BAD_API_CALL"}));
+        res.end();
+    // Handle good requests.
     } else {
+        console.log(url.parse(req.url));
         build_response(req.url).then((result) => {
-            // Set CORS headers to allow front-end requests.
             res.write(JSON.stringify(result));
             res.end();
         });
