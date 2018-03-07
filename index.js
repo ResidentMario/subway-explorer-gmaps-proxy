@@ -2,8 +2,11 @@ const http = require('http');
 const maps = require('@google/maps');
 const url  = require('url');
 
-require('dotenv').config();
-const GOOGLE_MAPS_DIRECTIONS_API_KEY = process.env.GOOGLE_MAPS_DIRECTIONS_API_KEY;
+require('dotenv').config({silent: true});
+let GOOGLE_MAPS_DIRECTIONS_API_KEY = process.env.GOOGLE_MAPS_DIRECTIONS_API_KEY;
+
+// https://stackoverflow.com/q/49155199/1993206
+GOOGLE_MAPS_DIRECTIONS_API_KEY = GOOGLE_MAPS_DIRECTIONS_API_KEY.replace(/\n$/, '');
 
 // Maps Directions API helper function.
 function fetch_transit_directions(starting_x, starting_y, ending_x, ending_y) {
@@ -49,7 +52,6 @@ http.createServer(function (req, res) {
         res.end();
     // Handle good requests.
     } else {
-        console.log(url.parse(req.url));
         build_response(req.url).then((result) => {
             res.write(JSON.stringify(result));
             res.end();
